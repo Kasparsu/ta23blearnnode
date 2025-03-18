@@ -27,6 +27,8 @@ setInterval(()=>{
    document.title ='🍪' + +cookies.value.toFixed(1) + ' Cookies!';
 },1000);
 
+// some improvments
+// golden cookie logic
 </script>
 <template>
     <div class="columns">
