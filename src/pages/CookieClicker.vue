@@ -24,6 +24,7 @@ let cps = computed(() => {
 setInterval(()=>{
    cookies.value+=cps.value;
 
+   //documenthead.title
    document.title ='🍪' + +cookies.value.toFixed(1) + ' Cookies!';
 },1000);
 
