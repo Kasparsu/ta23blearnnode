@@ -1,49 +1,103 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 
 const cookies = ref(0);
 const buildings = ref([
     { name: 'Cursor', price: 15, cps: 0.1, count: 0},
     { name: 'Grandma', price: 100, cps: 1, count: 0},
     { name: 'Farm', price: 1000, cps: 10, count: 0},
-    { name: 'Factory', price: 10_000, cps: 100, count: 0},
+    { name: 'Factory', price: 100000, cps: 100, count: 0},
+    { name: 'Factory upgrade', price: 1000000, cps: 1000, count: 0}
 ]);
 
-function buyBuilding(building){
-    cookies.value -= building.price;
-    building.price += Math.ceil(building.price / 100 * 15);
-    building.count++;
-}
-let cps = computed(() => {
-    let cps = 0;
-    buildings.value.forEach(building => {
-       cps+=building.cps*building.count;
-    });
-    return cps;
+// Автосохранение
+const saveGameState = () => {
+  const gameState = {
+    cookies: cookies.value,
+    buildings: buildings.value.map(b => ({
+      name: b.name,
+      price: b.price,
+      cps: b.cps,
+      count: b.count
+    }))
+  };
+  
+  try {
+    localStorage.setItem('cookieGameSave', JSON.stringify(gameState));
+    console.log('Game saved:', gameState);
+  } catch (error) {
+    console.error('Save error:', error);
+  }
+};
+
+// Загрузка сохранения
+const loadGameState = () => {
+  try {
+    const savedData = localStorage.getItem('cookieGameSave');
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      cookies.value = parsedData.cookies || 0;
+      buildings.value = buildings.value.map(b => {
+        const savedBuilding = parsedData.buildings.find(sb => sb.name === b.name);
+        return savedBuilding ? {...b, ...savedBuilding} : b;
+      });
+      console.log('Game loaded:', parsedData);
+    }
+  } catch (error) {
+    console.error('Load error:', error);
+  }
+};
+
+// Настройка автосохранения
+let saveInterval;
+
+onMounted(() => {
+  loadGameState();
+  saveInterval = setInterval(saveGameState, 1000);
 });
-setInterval(()=>{
-   cookies.value+=cps.value;
 
-   document.title ='🍪' + +cookies.value.toFixed(1) + ' Cookies!';
-},1000);
+onBeforeUnmount(() => {
+  clearInterval(saveInterval);
+});
 
+function buyBuilding(building) {
+  cookies.value -= building.price;
+  building.price += Math.ceil(building.price / 100 * 15);
+  building.count++;
+}
+
+const cps = computed(() => 
+  buildings.value.reduce((acc, building) => 
+    acc + (building.cps * building.count), 0)
+);
+
+setInterval(() => {
+  cookies.value += cps.value;
+  document.title = `🍪${cookies.value.toFixed(1)} Cookies!`;
+}, 1000);
 </script>
 <template>
     <div class="columns">
-        <div class="column is-4 has-background-primary has-text-centered">
-            <h1 class="is-size-1">{{ +cookies.toFixed(1) }} cookies</h1>
-            <h3 class="is-size-3">{{ +cps.toFixed(1) }} cps</h3>
-            <figure class="image is-square" @click="cookies++">
-                <img src="https://sweetlorens.com/cdn/shop/products/Copy-of-Chocolate-Chunk-Full-Cookie-transparent-background.png?v=1687811511" />
+        <div class="column is-4 has-background-grey has-text-centered" >
+            <h1 class="is-size-1"> {{ +cookies.toFixed(1) }} cookies </h1>
+            <h3 class="is-size-3"> {{ +cps.toFixed(1) }} cps </h3>
+            <figure class="image is-square " @click="cookies++">
+                <img src="https://www.freeiconspng.com/uploads/cookie-png-transparent-images-background-23.png">
             </figure>
         </div>
-        <div class="column is-6 has-background-link">
-            asdas
+
+        <div class="column is-6 has-background-grey-light">
+            <figure class="image is-square image is-96x96" v-if="buildings.find(b => b.name === 'Grandma' ).count >=1">
+                <img src="https://png.pngtree.com/png-clipart/20230914/original/pngtree-cute-grandma-clipart-the-cartoon-old-lady-character-has-a-bouquet-png-image_11242831.png">
+            </figure>
+            
         </div>
-        <div class="column is-2 has-background-warning">
+
+        <div class="column is-2 has-background-white-ter">
             <button v-for="building in buildings" :disabled="cookies<building.price" @click="buyBuilding(building)" class="button is-primary is-large is-fullwidth">
-                {{ building.name }} 🍪{{ building.price }} #{{ building.count }}
+                {{ building.name }} 🍪 {{ building.price }} #{{ building.count }} 
             </button>
         </div>
     </div>
+    
 </template>
