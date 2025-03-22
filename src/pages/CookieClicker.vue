@@ -5,12 +5,11 @@ const cookies = ref(0);
 const buildings = ref([
     { name: 'Cursor', price: 15, cps: 0.1, count: 0},
     { name: 'Grandma', price: 100, cps: 1, count: 0},
-    { name: 'Farm', price: 1000, cps: 10, count: 0},
-    { name: 'Factory', price: 100000, cps: 100, count: 0},
-    { name: 'Factory upgrade', price: 1000000, cps: 1000, count: 0}
+    { name: 'Farm', price: 1_000, cps: 10, count: 0},
+    { name: 'Factory', price: 10_000, cps: 30, count: 0},
 ]);
 
-// Автосохранение
+// AutoSave
 const saveGameState = () => {
   const gameState = {
     cookies: cookies.value,
@@ -30,7 +29,7 @@ const saveGameState = () => {
   }
 };
 
-// Загрузка сохранения
+// Loading the save
 const loadGameState = () => {
   try {
     const savedData = localStorage.getItem('cookieGameSave');
@@ -48,7 +47,6 @@ const loadGameState = () => {
   }
 };
 
-// Настройка автосохранения
 let saveInterval;
 
 onMounted(() => {
@@ -75,22 +73,53 @@ setInterval(() => {
   cookies.value += cps.value;
   document.title = `🍪${cookies.value.toFixed(1)} Cookies!`;
 }, 1000);
+
 </script>
+
 <template>
     <div class="columns">
         <div class="column is-4 has-background-grey has-text-centered" >
             <h1 class="is-size-1"> {{ +cookies.toFixed(1) }} cookies </h1>
             <h3 class="is-size-3"> {{ +cps.toFixed(1) }} cps </h3>
             <figure class="image is-square " @click="cookies++">
-                <img src="https://www.freeiconspng.com/uploads/cookie-png-transparent-images-background-23.png">
+                <img src="https://www.freeiconspng.com/uploads/download-biscuit-cookie-monster-clipart-24.png">
             </figure>
         </div>
 
         <div class="column is-6 has-background-grey-light">
+          <div class="columns">
+
             <figure class="image is-square image is-96x96" v-if="buildings.find(b => b.name === 'Grandma' ).count >=1">
+              <img src="https://png.pngtree.com/png-clipart/20230914/original/pngtree-cute-grandma-clipart-the-cartoon-old-lady-character-has-a-bouquet-png-image_11242831.png"> 
+            </figure>
+
+            <figure class="image is-square image is-96x96" v-if="buildings.find(b => b.name === 'Grandma' ).count >=10">
                 <img src="https://png.pngtree.com/png-clipart/20230914/original/pngtree-cute-grandma-clipart-the-cartoon-old-lady-character-has-a-bouquet-png-image_11242831.png">
             </figure>
+
+          </div>
+          <div class="columns">
+
+            <figure class="image is-square image is-96x96" v-if="buildings.find(b => b.name === 'Farm' ).count >=1">
+                <img src="https://pics.clipartpng.com/Corn_PNG_Clipart-466.png">
+            </figure>
+
+            <figure class="image is-square image is-96x96" v-if="buildings.find(b => b.name === 'Farm' ).count >=10">
+                <img src="https://pics.clipartpng.com/Corn_PNG_Clipart-466.png">
+            </figure>
+
+          </div>  
+          <div class="columns">
+
+            <figure class="image is-square image is-96x96" v-if="buildings.find(b => b.name === 'Factory' ).count >=1">
+                <img src="https://www.freeiconspng.com/uploads/gear-icon-11.png">
+            </figure>
+
+            <figure class="image is-square image is-96x96" v-if="buildings.find(b => b.name === 'Factory' ).count >=10">
+                <img src="https://www.freeiconspng.com/uploads/gear-icon-11.png">
+            </figure>
             
+          </div>
         </div>
 
         <div class="column is-2 has-background-white-ter">
