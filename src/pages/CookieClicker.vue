@@ -23,7 +23,6 @@ const saveGameState = () => {
   
   try {
     localStorage.setItem('cookieGameSave', JSON.stringify(gameState));
-    console.log('Game saved:', gameState);
   } catch (error) {
     console.error('Save error:', error);
   }
@@ -40,7 +39,6 @@ const loadGameState = () => {
         const savedBuilding = parsedData.buildings.find(sb => sb.name === b.name);
         return savedBuilding ? {...b, ...savedBuilding} : b;
       });
-      console.log('Game loaded:', parsedData);
     }
   } catch (error) {
     console.error('Load error:', error);
@@ -59,9 +57,11 @@ onBeforeUnmount(() => {
 });
 
 function buyBuilding(building) {
-  cookies.value -= building.price;
-  building.price += Math.ceil(building.price / 100 * 15);
-  building.count++;
+  if (cookies.value >= building.price) {
+    cookies.value -= building.price;
+    building.price += Math.ceil(building.price * 0.15);
+    building.count++;
+  }
 }
 
 const cps = computed(() => 
@@ -70,63 +70,65 @@ const cps = computed(() =>
 );
 
 setInterval(() => {
-  cookies.value += cps.value;
+  cookies.value += cps.value / 10;
   document.title = `🍪${cookies.value.toFixed(1)} Cookies!`;
-}, 1000);
+}, 100);
 
 </script>
 
 <template>
     <div class="columns">
-        <div class="column is-4 has-background-grey has-text-centered" >
-            <h1 class="is-size-1"> {{ +cookies.toFixed(1) }} cookies </h1>
-            <h3 class="is-size-3"> {{ +cps.toFixed(1) }} cps </h3>
-            <figure class="image is-square " @click="cookies++">
+        <div class="column is-4 has-background-grey has-text-centered">
+            <h1 class="is-size-1"> {{ cookies.toFixed(1) }} cookies </h1>
+            <h3 class="is-size-3"> {{ cps.toFixed(1) }} cps </h3>
+            <figure class="image is-square" @click="cookies++">
                 <img src="https://www.freeiconspng.com/uploads/download-biscuit-cookie-monster-clipart-24.png">
             </figure>
         </div>
 
         <div class="column is-6 has-background-grey-light">
-          <div class="columns">
+            <!-- Grandma Images -->
+            <div class="columns is-flex is-flex-wrap-wrap">
+                <figure 
+                    v-for="n in Math.floor(buildings.find(b => b.name === 'Grandma').count / 10) + 1"
+                    v-if="buildings.find(b => b.name === 'Grandma').count >= 1"
+                    class="image is-96x96 m-2"
+                    :key="'grandma-' + n">
+                    <img src="https://png.pngtree.com/png-clipart/20230914/original/pngtree-cute-grandma-clipart-the-cartoon-old-lady-character-has-a-bouquet-png-image_11242831.png">
+                </figure>
+            </div>
 
-            <figure class="image is-square image is-96x96" v-if="buildings.find(b => b.name === 'Grandma' ).count >=1">
-              <img src="https://png.pngtree.com/png-clipart/20230914/original/pngtree-cute-grandma-clipart-the-cartoon-old-lady-character-has-a-bouquet-png-image_11242831.png"> 
-            </figure>
+            <!-- Farm Images -->
+            <div class="columns is-flex is-flex-wrap-wrap">
+                <figure 
+                    v-for="n in Math.floor(buildings.find(b => b.name === 'Farm').count / 10) + 1"
+                    v-if="buildings.find(b => b.name === 'Farm').count >= 1"
+                    class="image is-96x96 m-2"
+                    :key="'farm-' + n">
+                    <img src="https://pics.clipartpng.com/Corn_PNG_Clipart-466.png">
+                </figure>
+            </div>
 
-            <figure class="image is-square image is-96x96" v-if="buildings.find(b => b.name === 'Grandma' ).count >=10">
-                <img src="https://png.pngtree.com/png-clipart/20230914/original/pngtree-cute-grandma-clipart-the-cartoon-old-lady-character-has-a-bouquet-png-image_11242831.png">
-            </figure>
-
-          </div>
-          <div class="columns">
-
-            <figure class="image is-square image is-96x96" v-if="buildings.find(b => b.name === 'Farm' ).count >=1">
-                <img src="https://pics.clipartpng.com/Corn_PNG_Clipart-466.png">
-            </figure>
-
-            <figure class="image is-square image is-96x96" v-if="buildings.find(b => b.name === 'Farm' ).count >=10">
-                <img src="https://pics.clipartpng.com/Corn_PNG_Clipart-466.png">
-            </figure>
-
-          </div>  
-          <div class="columns">
-
-            <figure class="image is-square image is-96x96" v-if="buildings.find(b => b.name === 'Factory' ).count >=1">
-                <img src="https://www.freeiconspng.com/uploads/gear-icon-11.png">
-            </figure>
-
-            <figure class="image is-square image is-96x96" v-if="buildings.find(b => b.name === 'Factory' ).count >=10">
-                <img src="https://www.freeiconspng.com/uploads/gear-icon-11.png">
-            </figure>
-            
-          </div>
+            <!-- Factory Images -->
+            <div class="columns is-flex is-flex-wrap-wrap">
+                <figure 
+                    v-for="n in Math.floor(buildings.find(b => b.name === 'Factory').count / 10) + 1"
+                    v-if="buildings.find(b => b.name === 'Factory').count >= 1"
+                    class="image is-96x96 m-2"
+                    :key="'factory-' + n">
+                    <img src="https://www.freeiconspng.com/uploads/gear-icon-11.png">
+                </figure>
+            </div>
         </div>
 
         <div class="column is-2 has-background-white-ter">
-            <button v-for="building in buildings" :disabled="cookies<building.price" @click="buyBuilding(building)" class="button is-primary is-large is-fullwidth">
-                {{ building.name }} 🍪 {{ building.price }} #{{ building.count }} 
+            <button 
+                v-for="building in buildings" 
+                :disabled="cookies < building.price" 
+                @click="buyBuilding(building)" 
+                class="button is-primary is-large is-fullwidth mb-3">
+                {{ building.name }} 🍪 {{ building.price }} #{{ building.count }}
             </button>
         </div>
     </div>
-    
 </template>
