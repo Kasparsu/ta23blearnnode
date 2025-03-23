@@ -6,15 +6,29 @@ const goldenCookies = ref([]);
 const achievements = ref([]);
 const achievementNotifications = ref([]);
 const buildings = ref([
-    { name: 'Cursor', price: 15, cps: 0.1, count: 0},
-    { name: 'Grandma', price: 100, cps: 1, count: 0},
-    { name: 'Farm', price: 1000, cps: 10, count: 0},
-    { name: 'Factory', price: 10_000, cps: 100, count: 0},
+    { name: 'Cursor', price: 15, cps: 0.1, count: 0 },
+    { name: 'Grandma', price: 100, cps: 1, count: 0 },
+    { name: 'Farm', price: 1000, cps: 10, count: 0 },
+    { name: 'Factory', price: 10_000, cps: 100, count: 0 },
 ]);
 
 const upgrades = ref([
-    { name: 'Better Cursors', price: 500, effect: () => buildings.value[0].cps *= 2, bought: false },
-    { name: 'Cheaper Buildings', price: 1000, effect: () => buildings.value.forEach(b => b.price *= 0.9), bought: false }
+    {
+        name: 'Better Cursors',
+        price: 500,
+        effect: () => {
+            const cheapestBuilding = buildings.value.find(b => b.count > 0) || buildings.value[0];
+            cheapestBuilding.cps *= 2;
+        },
+        bought: false
+    },
+    {
+        name: 'Cheaper Buildings',
+        price: 1000,
+        effect: () =>
+            buildings.value.forEach(b => b.price *= 0.9),
+        bought: false
+    },
 ]);
 
 const achievementList = [
@@ -30,6 +44,10 @@ function buyBuilding(building) {
     cookies.value -= building.price;
     building.price += Math.ceil(building.price * 0.15);
     building.count++;
+
+    //Resort buildings by price (so the cheapest one is always first)
+    buildings.value.sort((a, b) => a.price - b.price);
+
     checkAchievements();
 }
 
@@ -88,23 +106,28 @@ function checkAchievements() {
             <h1 class="is-size-1">{{ cookies.toFixed(1) }} cookies</h1>
             <h3 class="is-size-3">{{ cps.toFixed(1) }} cps</h3>
             <figure class="image is-square" @click="cookies++">
-                <img src="https://sweetlorens.com/cdn/shop/products/Copy-of-Chocolate-Chunk-Full-Cookie-transparent-background.png?v=1687811511" />
+                <img
+                    src="https://sweetlorens.com/cdn/shop/products/Copy-of-Chocolate-Chunk-Full-Cookie-transparent-background.png?v=1687811511" />
             </figure>
-            <div v-for="gc in goldenCookies" :key="gc.id" class="golden-cookie" :style="{ top: gc.y + '%', left: gc.x + '%' }" @click="collectGoldenCookie(gc.id)">✨</div>
+            <div v-for="gc in goldenCookies" :key="gc.id" class="golden-cookie"
+                :style="{ top: gc.y + '%', left: gc.x + '%' }" @click="collectGoldenCookie(gc.id)">✨</div>
         </div>
         <div class="column is-4 has-background-link">
             <h2 class="is-size-3">Upgrades</h2>
-            <button v-for="upgrade in upgrades" :disabled="cookies < upgrade.price || upgrade.bought" @click="buyUpgrade(upgrade)" class="button is-warning is-fullwidth">
+            <button v-for="upgrade in upgrades" :disabled="cookies < upgrade.price || upgrade.bought"
+                @click="buyUpgrade(upgrade)" class="button is-warning is-fullwidth">
                 {{ upgrade.name }} - 🍪{{ upgrade.price }}
             </button>
             <h2 class="is-size-3">Achievements</h2>
             <ul>
                 <li v-for="ach in achievements" :key="ach">🏆 {{ ach }}</li>
             </ul>
-            <div class="achievement-popup" v-for="notif in achievementNotifications" :key="notif">🏆 Achievement Unlocked: {{ notif }}</div>
+            <div class="achievement-popup" v-for="notif in achievementNotifications" :key="notif">🏆 Achievement
+                Unlocked: {{ notif }}</div>
         </div>
         <div class="column is-4 has-background-warning">
-            <button v-for="building in buildings" :disabled="cookies < building.price" @click="buyBuilding(building)" class="button is-primary is-large is-fullwidth">
+            <button v-for="building in buildings" :disabled="cookies < building.price" @click="buyBuilding(building)"
+                class="button is-primary is-large is-fullwidth">
                 {{ building.name }} ({{ building.count }}) - 🍪{{ building.price }} | +{{ building.cps }} cps
             </button>
         </div>
@@ -121,10 +144,17 @@ function checkAchievements() {
     font-size: 20px;
     animation: blink 0.5s infinite alternate;
 }
+
 @keyframes blink {
-    0% { opacity: 1; }
-    100% { opacity: 0.5; }
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.5;
+    }
 }
+
 .achievement-popup {
     position: fixed;
     top: 10px;
@@ -137,8 +167,14 @@ function checkAchievements() {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     animation: fadeOut 3s forwards;
 }
+
 @keyframes fadeOut {
-    0% { opacity: 1; }
-    100% { opacity: 0; }
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
 }
 </style>
