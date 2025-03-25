@@ -85,31 +85,36 @@ setInterval(() => {
 
 // Function to spawn a shiny cookie randomly
 function spawnShinyCookie() {
-    shinyCookie.value.x = Math.random() * 80 + 10; // Random X position (10% to 90% of screen)
-    shinyCookie.value.y = Math.random() * 80 + 10; // Random Y position (10% to 90% of screen)
+    // Random X and Y position (20% to 80% of screen for better positioning)
+    shinyCookie.value.x = Math.random() * 60 + 20; // X between 20% and 80% of the screen width
+    shinyCookie.value.y = Math.random() * 60 + 20; // Y between 20% and 80% of the screen height
     shinyCookie.value.visible = true;
+    
+    console.log("Shiny Cookie Spawned at:", shinyCookie.value.x, shinyCookie.value.y); // Debugging output
 
     setTimeout(() => {
-        shinyCookie.value.visible = false;
-        spawnNextShiny();
-    }, 5000);
+        shinyCookie.value.visible = false; // Hide after 5 seconds if not clicked
+        spawnNextShiny(); // Schedule next shiny spawn
+    }, 5000); // Adjust the time as needed
 }
 
 // Function to collect shiny cookie
 function collectShinyCookie() {
-    cookies.value += cps.value * 10;
+    console.log("Shiny Cookie Collected!");
+    cookies.value += cps.value * 20;
     shinyCookie.value.visible = false;
     spawnNextShiny();
 }
 
 // Function to schedule the next shiny cookie spawn
 function spawnNextShiny() {
-    const delay = Math.random() * 20000 + 10000; // Random delay between 10-30 seconds
+    const delay = Math.random() * 20000 + 10000;
+    console.log("Next Shiny Cookie Spawn in:", delay / 1000, "seconds");
     setTimeout(spawnShinyCookie, delay);
 }
 
-// Start first shiny cookie spawn
 spawnNextShiny();
+
 </script>
 
 <template>
