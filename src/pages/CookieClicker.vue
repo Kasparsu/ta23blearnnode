@@ -10,7 +10,6 @@ const buildings = ref([
     { name: 'Factory', price: 10_000, cps: 100, count: 0 },
 ]);
 
-
 const upgrades = ref([
     { name: 'Better Ovens', effect: () => multiplyCps(2), price: 500, bought: false },
     { name: 'Fertilized Fields', effect: () => multiplyCps(2), price: 5000, bought: false },
@@ -29,7 +28,7 @@ function buyBuilding(building) {
         cookies.value -= building.price;
         building.price = Math.ceil(building.price * 1.15);
         building.count++;
-        checkAchievements();
+        checkAchievements();  // Check achievements after purchasing
     }
 }
 
@@ -58,12 +57,6 @@ let cps = computed(() => {
     return totalCps;
 });
 
-// Auto-generate cookies based on CPS every second
-setInterval(() => {
-    cookies.value += cps.value;
-    document.title = '🍪 ' + cookies.value.toFixed(1) + ' Cookies!';
-}, 1000);
-
 // Function to check achievements
 function checkAchievements() {
     const newAchievements = [
@@ -83,6 +76,13 @@ function checkAchievements() {
     });
 }
 
+// Auto-generate cookies based on CPS every second
+setInterval(() => {
+    cookies.value += cps.value;
+    document.title = '🍪 ' + cookies.value.toFixed(1) + ' Cookies!';
+    checkAchievements();  // Check achievements regularly as cookies accumulate
+}, 1000);
+
 // Function to spawn a shiny cookie randomly
 function spawnShinyCookie() {
     shinyCookie.value.x = Math.random() * 80 + 10; // Random X position (10% to 90% of screen)
@@ -90,16 +90,16 @@ function spawnShinyCookie() {
     shinyCookie.value.visible = true;
 
     setTimeout(() => {
-        shinyCookie.value.visible = false; // Hide after 5 seconds if not clicked
-        spawnNextShiny(); // Schedule next shiny spawn
+        shinyCookie.value.visible = false;
+        spawnNextShiny();
     }, 5000);
 }
 
 // Function to collect shiny cookie
 function collectShinyCookie() {
-    cookies.value += cps.value * 10; // Reward 10x CPS in cookies
+    cookies.value += cps.value * 10;
     shinyCookie.value.visible = false;
-    spawnNextShiny(); // Schedule next shiny spawn
+    spawnNextShiny();
 }
 
 // Function to schedule the next shiny cookie spawn
@@ -123,7 +123,7 @@ spawnNextShiny();
             </figure>
         </div>
 
-        <!-- Upgrades and Achievements section -->
+        <!-- Upgrades and Buildings section -->
         <div class="column is-4 has-background-info">
             <h2 class="is-size-2">Upgrades</h2>
             <button v-for="upgrade in upgrades" 
@@ -134,16 +134,6 @@ spawnNextShiny();
                 <span v-if="upgrade.bought">✅</span>
             </button>
 
-            <h2 class="is-size-2">Achievements</h2>
-            <ul>
-                <li v-for="achievement in achieved" class="has-text-white">
-                    🎉 {{ achievement }}
-                </li>
-            </ul>
-        </div>
-
-        <!-- Buildings section -->
-        <div class="column is-4 has-background-warning">
             <h2 class="is-size-2">Buildings</h2>
             <button v-for="building in buildings" 
                     :disabled="cookies < building.price" 
@@ -151,6 +141,16 @@ spawnNextShiny();
                     class="button is-primary is-fullwidth">
                 {{ building.name }} 🍪{{ building.price }} #{{ building.count }}
             </button>
+        </div>
+
+        <!-- Achievements section moved to the bottom -->
+        <div class="column is-4 has-background-warning">
+            <h2 class="is-size-2">Achievements</h2>
+            <ul>
+                <li v-for="achievement in achieved" class="has-text-white">
+                    🎉 {{ achievement }}
+                </li>
+            </ul>
         </div>
     </div>
 
@@ -163,25 +163,25 @@ spawnNextShiny();
     </div>
 </template>
 
-<style>
+<style scoped>
 .columns {
-    margin: 20px;
+    margin: 1.5rem;
 }
 
 /* Shiny cookie styles */
 .shiny-cookie {
     position: fixed;
-    font-size: 40px;
+    font-size: 2.5rem;
     cursor: pointer;
     animation: glow 1s infinite alternate;
 }
 
 @keyframes glow {
     from {
-        text-shadow: 0 0 10px gold;
+        text-shadow: 0 0 0.625rem gold;
     }
     to {
-        text-shadow: 0 0 20px orange, 0 0 30px yellow;
+        text-shadow: 0 0 1.25rem orange, 0 0 1.875rem yellow;
     }
 }
 </style>
