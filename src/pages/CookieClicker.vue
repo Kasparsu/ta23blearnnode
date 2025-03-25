@@ -9,14 +9,14 @@ const buildings = ref([
     { name: 'Factory', price: 10_000, cps: 100, count: 0},
 ]);
 
-// Статистика для ачивок
+
 const achievements = ref({
   firstClick: false,
   firstUpgrade: false,
   goldenCookie: false
 });
 
-// Функция для покупки здания
+
 function buyBuilding(building) {
     cookies.value -= building.price;
     building.price += Math.ceil(building.price / 100 * 15);
@@ -27,7 +27,7 @@ function buyBuilding(building) {
     }
 }
 
-// Реактивный расчет CPS
+
 let cps = computed(() => {
     let cps = 0;
     buildings.value.forEach(building => {
@@ -36,7 +36,7 @@ let cps = computed(() => {
     return cps;
 });
 
-// Обработчик клика по печеньке
+
 function onCookieClick() {
     cookies.value++;
     if (!achievements.value.firstClick) {
@@ -45,15 +45,15 @@ function onCookieClick() {
     }
 }
 
-// Секундный интервал, для накопления печенек
+
 setInterval(() => {
     cookies.value += cps.value;
 
-    // Появление золотой печеньки с шансом 1/1000
+
     if (!achievements.value.goldenCookie && Math.random() < 0.001) {
         achievements.value.goldenCookie = true;
         alert("Поздравляем! Золотая печенька появилась! Получите бонус!");
-        cookies.value += 1000;  // например, 1000 дополнительных печенек
+        cookies.value += 1000;  
     }
 
     document.title = '🍪' + cookies.value.toFixed(1) + ' Cookies!';
