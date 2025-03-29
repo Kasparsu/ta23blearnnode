@@ -6,7 +6,7 @@ const buildings = ref([
     { name: 'Cursor', price: 15, cps: 0.1, count: 0 },
     { name: 'Grandma', price: 100, cps: 1, count: 0 },
     { name: 'Farm', price: 1000, cps: 10, count: 0 },
-    { name: 'Factory', price: 10, cps: 100, count: 0 },
+    { name: 'Factory', price: 0, cps: 1000000, count: 0 },
 ]);
 
 function buyBuilding(building) {
@@ -40,8 +40,19 @@ setInterval(() => {
         </div>
 
         <div class="column is-6 has-background-white has-text-black">
-            asdas
+            <div v-for="building in buildings">
+                <div v-if="building.count > 0" class="py-2">
+                    you have {{ building.count }} {{ building.name }}'s
+                    <div style="display: flex; flex-wrap: wrap; gap: 4px; max-width: 100%;">
+                        <div v-for="(_, i) in Array.from({ length: building.count })" :key="i">
+                            👵
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+
+
 
 
 
@@ -56,11 +67,10 @@ setInterval(() => {
 
 <style scoped>
 .cookie-move {
-  transition: transform 0.1s ease;
+    transition: transform 0.1s ease;
 }
+
 .cookie-move:active {
-  transform: scale(0.9) rotate(5deg);
+    transform: scale(0.9) rotate(5deg);
 }
-
-
 </style>
