@@ -1,13 +1,68 @@
 <script setup>
 import { computed, ref } from 'vue';
+import AchievementBox from './AchievementBox.vue'
+
 
 const cookies = ref(0);
 const buildings = ref([
-    { name: 'Cursor', price: 15, cps: 0.1, count: 0 },
-    { name: 'Grandma', price: 100, cps: 1, count: 0 },
-    { name: 'Farm', price: 1000, cps: 10, count: 0 },
+    { name: 'Cursor', price: 0, cps: 0.1, count: 0 },
+    { name: 'Grandma', price: 0, cps: 1, count: 0 },
+    { name: 'Farm', price: 0, cps: 10, count: 0 },
     { name: 'Factory', price: 0, cps: 1000000, count: 0 },
 ]);
+
+let userclicked = ref(0);
+let achievements = computed(() => [
+  {
+    name: "Click more!",
+    desc: "You clicked the cookie 10 times!",
+    get condition() {
+      return userclicked.value == 10
+    }
+  },
+  {
+    name: "Click addict!",
+    desc: "50 clicks already?",
+    get condition() {
+      return userclicked.value == 50
+    }
+  },
+  {
+    name: "Click master!",
+    desc: "100 clicks. You serious?",
+    get condition() {
+      return userclicked.value == 100
+    }
+  },
+  {
+    name: "Click god!",
+    desc: "500 clicks. Seek help.",
+    get condition() {
+      return userclicked.value == 500
+    }
+  },
+  {
+    name: "Endless clicker",
+    desc: "1,000 clicks. No turning back.",
+    get condition() {
+      return userclicked.value == 1000
+    }
+  },
+  {
+    name: "Finger of steel",
+    desc: "10,000 clicks. What's wrong with you?",
+    get condition() {
+      return userclicked.value == 10000
+    }
+  }
+])
+
+//let unlocked_achievement = ref(-1); // if achievement index then show the echievement for 3 seconds
+
+function whenCookieClicked(){
+    cookies.value++;
+    userclicked.value++;
+}
 
 function buyBuilding(building) {
     cookies.value -= building.price;
@@ -27,35 +82,42 @@ setInterval(() => {
     document.title = '🍪' + +cookies.value.toFixed(1) + ' Cookies!';
 }, 1000);
 
+
+
+
 </script>
 <template>
     <div class="columns">
         <div class="column is-4 has-background-white has-text-centered">
             <h1 class="is-size-1 has-text-black">{{ +cookies.toFixed(1) }} cookies</h1>
             <h3 class="is-size-3 has-text-black">{{ +cps.toFixed(1) }} cps</h3>
-            <figure class="image is-square cookie-move" @click="cookies++">
+            <figure class="image is-square cookie-move" @click="whenCookieClicked">
                 <img
                     src="https://sweetlorens.com/cdn/shop/products/Copy-of-Chocolate-Chunk-Full-Cookie-transparent-background.png?v=1687811511" />
             </figure>
         </div>
 
-        <div class="column is-6 has-background-white has-text-black">
-            <div v-for="building in buildings">
-                <div v-if="building.count > 0" class="py-2">
-                    you have {{ building.count }} {{ building.name }}'s
-                    <div style="display: flex; flex-wrap: wrap; gap: 4px; max-width: 100%;">
-                        <div v-for="(_, i) in Array.from({ length: building.count })" :key="i">
-                            👵
+        <div class="column is-6 has-background-white has-text-black is-flex is-flex-direction-column">
+            <div style="flex:1;">
+                <div v-for="building in buildings">
+                    <div v-if="building.count > 0" class="py-2">
+                        you have {{ building.count }} {{ building.name }}'s
+                        <div style="display: flex; flex-wrap: wrap; gap: 4px; max-width: 100%;">
+                            <div v-for="(_, i) in Array.from({ length: building.count })" :key="i">
+                                👵
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div class="achievements-box d-block">                                
+                <div class="achievement is-gapless">
+                    <AchievementBox :achievements="achievements"></AchievementBox>
+                </div>
+            </div>
+
         </div>
-
-
-
-
-
         <div class="column is-2 has-background-white">
             <button v-for="building in buildings" :disabled="cookies < building.price" @click="buyBuilding(building)"
                 class="button is-primary is-large is-fullwidth">
