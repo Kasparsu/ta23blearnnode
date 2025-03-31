@@ -5,127 +5,63 @@ import AchievementBox from './AchievementBox.vue'
 
 const cookies = ref(0);
 const buildings = ref([
-  { name: 'Cursor',  price: 15,     cps: 5,       count: 0 },
-  { name: 'Grandma', price: 100,    cps: 20,         count: 0 },
-  { name: 'Farm',    price: 1100,   cps: 2000,         count: 0 },
-  { name: 'Factory', price: 12000,  cps: 20000,        count: 0 },
+  { name: 'Cursor',     price: 15,        cps: 5,           count: 0, emoji: '🖱️' },
+  { name: 'Grandma',    price: 100,       cps: 20,          count: 0, emoji: '👵' },
+  { name: 'Farm',       price: 1100,      cps: 2000,        count: 0, emoji: '🌾' },
+  { name: 'Factory',    price: 12000,     cps: 20000,       count: 0, emoji: '🏭' },
+  { name: 'Mine',       price: 130000,    cps: 100000,      count: 0, emoji: '⛏️' },
+  { name: 'Shipment',   price: 1400000,   cps: 500000,      count: 0, emoji: '🚀' },
+  { name: 'Alchemy Lab',price: 20000000,  cps: 2000000,     count: 0, emoji: '⚗️' },
+  { name: 'Portal',     price: 330000000, cps: 10000000,    count: 0, emoji: '🌀' },
+  { name: 'Time Machine', price: 5100000000, cps: 40000000, count: 0, emoji: '⏰' },
+  { name: 'Antimatter Condenser', price: 75000000000, cps: 160000000, count: 0, emoji: '💠' },
+  { name: 'Prism',      price: 1000000000000, cps: 640000000, count: 0, emoji: '🌈' },
+  { name: 'Chancemaker', price: 14000000000000, cps: 2560000000, count: 0, emoji: '🎲' },
+  { name: 'Fractal Engine', price: 170000000000000, cps: 10240000000, count: 0, emoji: '🧩' },
+  { name: 'Javascript Console', price: 2100000000000000, cps: 40960000000, count: 0, emoji: '💻' },
+  { name: 'Idleverse',  price: 26000000000000000, cps: 163840000000, count: 0, emoji: '🌌' },
+  { name: 'Cortex Baker', price: 310000000000000000, cps: 655360000000, count: 0, emoji: '🧠' }
 ]);
 
 
+
 let userclicked = ref(0);
-let achievements = computed(() => [
-  {
-    name: "Click more!",
-    desc: "You clicked the cookie 10 times!",
+const clickAchievementsData = [
+  [10, "Click more!", "You clicked the cookie 10 times!"],
+  [50, "Click addict!", "50 clicks already?"],
+  [100, "Click master!", "100 clicks. You serious?"],
+  [500, "Click god!", "500 clicks. Seek help."],
+  [1000, "Endless clicker", "1,000 clicks. No turning back."],
+  [10000, "Finger of steel", "10,000 clicks. What's wrong with you?"],
+  [100, "Clicking Apprentice 🖱️", "You've clicked 100 times."],
+];
+
+const buildingAchievementsData = [
+  ["Factory", 100, "Factorio! ⚙️", "You have 100 factories"],
+  ["Grandma", 10, "Grandma's Bakery 👵", "You have 10 Grandmas."],
+  ["Farm", 5, "Farming Tycoon 🌾", "You own 5 Farms."],
+  ["Cursor", 20, "Cursor Collector 👆", "You own 20 Cursors."],
+];
+
+const achievements = computed(() => [
+  ...clickAchievementsData.map(([count, name, desc]) => ({
+    name,
+    desc,
     get condition() {
-      return userclicked.value == 10
-    }
-  },
-  {
-    name: "Click addict!",
-    desc: "50 clicks already?",
+      return userclicked.value === count;
+    },
+  })),
+  ...buildingAchievementsData.map(([buildingName, targetCount, name, desc]) => ({
+    name,
+    desc,
     get condition() {
-      return userclicked.value == 50
-    }
-  },
-  {
-    name: "Click master!",
-    desc: "100 clicks. You serious?",
-    get condition() {
-      return userclicked.value == 100
-    }
-  },
-  {
-    name: "Click god!",
-    desc: "500 clicks. Seek help.",
-    get condition() {
-      return userclicked.value == 500
-    }
-  },
-  {
-    name: "Endless clicker",
-    desc: "1,000 clicks. No turning back.",
-    get condition() {
-      return userclicked.value == 1000
-    }
-  },
-  {
-    name: "Finger of steel",
-    desc: "10,000 clicks. What's wrong with you?",
-    get condition() {
-      return userclicked.value == 10000
-    }
-  },
-  {
-    name: "Endless clicker",
-    desc: "1,000 clicks. No turning back.",
-    get condition() {
-      return userclicked.value === 1000;
-    }
-  },
-  {
-    name: "Finger of steel",
-    desc: "10,000 clicks. What's wrong with you?",
-    get condition() {
-      return userclicked.value === 10000;
-    }
-  },
-  {
-    name: "Factorio! ⚙️",
-    desc: "you have 100 factories",
-    get condition() {
-      for (const item of buildings.value) {
-        if (item.name === "Factory" && item.count >= 100) {
-          return true;
-        }
-      }
-      return false;
-    }
-  },
-  {
-    name: "Grandma's Bakery 👵",
-    desc: "You have 10 Grandmas.",
-    get condition() {
-      for (const item of buildings.value) {
-        if (item.name === "Grandma" && item.count === 10) {
-          return true;
-        }
-      }
-      return false;
-    }
-  },
-  {
-    name: "Farming Tycoon 🌾",
-    desc: "You own 5 Farms.",
-    get condition() {
-      for (const item of buildings.value) {
-        if (item.name === "Farm" && item.count === 5) {
-          return true;
-        }
-      }
-      return false;
-    }
-  },
-  {
-    name: "Clicking Apprentice 🖱️",
-    desc: "You've clicked 100 times.",
-    get condition() {
-      return userclicked.value === 100;
-    }
-  },
-  {
-    name: "Cursor Collector 👆",
-    desc: "You own 20 Cursors.",
-    get condition() {
-      for (const item of buildings.value) {
-        if (item.name === "Cursor" && item.count === 20) {
-          return true;
-        }
-      }
-      return false;
-    }
-  },
-])
+      return buildings.value.some(
+        (item) => item.name === buildingName && item.count >= targetCount
+      );
+    },
+  })),
+]);
+
 
 // Stores the max spawn positions for golden cookies inside the container
 const goldenCookieSpawnLimits = {
@@ -203,7 +139,7 @@ onMounted(() => {
 
 
 function onGoldenCookieClick(){
-  cookies.value += 10000;
+  cookies.value += cookies.value * 2;
   const cookie = document.querySelector('.golden-cookie');
   cookie.style.display = "none";
   setTimeout(() => {
@@ -233,7 +169,7 @@ function onGoldenCookieClick(){
             you have {{ building.count }} {{ building.name }}'s
             <div style="display: flex; flex-wrap: wrap; gap: 4px; max-width: 100%;">
               <div v-for="(_, i) in Array.from({ length: building.count })" :key="i">
-                👵
+                {{building.emoji }}
               </div>
             </div>
           </div>
