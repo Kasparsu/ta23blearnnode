@@ -27,28 +27,81 @@ const buildings = ref([
 
 let userclicked = ref(0);
 const clickAchievementsData = [
-  [10, "Click more!", "You clicked the cookie 10 times!"],
+  [10, "Welcome to Cookie Clicker!", "10 clicks"],
   [50, "Click addict!", "50 clicks already?"],
   [100, "Click master!", "100 clicks. You serious?"],
   [500, "Click god!", "500 clicks. Seek help."],
-  [1000, "Endless clicker", "1,000 clicks. No turning back."],
   [10000, "Finger of steel", "10,000 clicks. What's wrong with you?"],
   [100, "Clicking Apprentice 🖱️", "You've clicked 100 times."],
 ];
 
 const buildingAchievementsData = [
-  ["Factory", 100, "Factorio! ⚙️", "You have 100 factories"],
-  ["Grandma", 10, "Grandma's Bakery 👵", "You have 10 Grandmas."],
-  ["Farm", 5, "Farming Tycoon 🌾", "You own 5 Farms."],
+  ["Cursor", 10, "Starter Clicker 🖱️", "You own 10 Cursors."],
   ["Cursor", 20, "Cursor Collector 👆", "You own 20 Cursors."],
+  ["Cursor", 50, "Click Swarm 💥", "You own 50 Cursors."],
+
+  ["Grandma", 10, "Grandma's Bakery 👵", "You have 10 Grandmas."],
+  ["Grandma", 25, "Cookie Coven 🧙‍♀️", "You have 25 Grandmas."],
+  ["Grandma", 50, "Elder Council 🕯️", "You have 50 Grandmas."],
+
+  ["Farm", 5, "Farming Tycoon 🌾", "You own 5 Farms."],
+  ["Farm", 20, "Agricultural Empire 🚜", "You own 20 Farms."],
+  ["Farm", 50, "Mega Farm 🏡", "You own 50 Farms."],
+
+  ["Factory", 10, "Mass Production 🏭", "You have 10 Factories."],
+  ["Factory", 50, "Factorio! ⚙️", "You have 50 Factories."],
+  ["Factory", 100, "Industrial Overlord 🛠️", "You have 100 Factories."],
+
+  ["Mine", 10, "Rock Digger ⛏️", "You have 10 Mines."],
+  ["Mine", 25, "Tunnel Vision 🕳️", "You have 25 Mines."],
+  ["Mine", 50, "Motherlode Miner 💎", "You have 50 Mines."],
+
+  ["Shipment", 5, "Export Hustler 🚚", "You own 5 Shipments."],
+  ["Shipment", 20, "Space Dealer 🚀", "You own 20 Shipments."],
+  ["Shipment", 50, "Interstellar Trade 🪐", "You own 50 Shipments."],
+
+  ["Alchemy Lab", 5, "Apprentice Alchemist ⚗️", "You own 5 Alchemy Labs."],
+  ["Alchemy Lab", 15, "Golden Touch ✨", "You own 15 Alchemy Labs."],
+  ["Alchemy Lab", 30, "Philosopher’s Stone 🧪", "You own 30 Alchemy Labs."],
+
+  ["Portal", 1, "First Rift 🌀", "You opened a Portal."],
+  ["Portal", 10, "Beyond the Veil 🌌", "You own 10 Portals."],
+  ["Portal", 25, "Dimensional Master 🪞", "You own 25 Portals."],
+
+  ["Time Machine", 1, "Time Beginner ⏰", "You built your first Time Machine."],
+  ["Time Machine", 10, "Looper 🔁", "You own 10 Time Machines."],
+  ["Time Machine", 30, "Temporal Lord 🕰️", "You own 30 Time Machines."],
+
+  ["Antimatter Condenser", 5, "Quantum Tinkerer 💠", "You own 5 Antimatter Condensers."],
+  ["Antimatter Condenser", 15, "Core Melter ⚛️", "You own 15 Antimatter Condensers."],
+
+  ["Prism", 5, "Light Bender 🌈", "You own 5 Prisms."],
+  ["Prism", 15, "Spectrum Shifter 🎇", "You own 15 Prisms."],
+
+  ["Chancemaker", 5, "Probability Twister 🎲", "You own 5 Chancemakers."],
+  ["Chancemaker", 15, "Luck Architect 🍀", "You own 15 Chancemakers."],
+
+  ["Fractal Engine", 5, "Pattern Weaver 🧩", "You own 5 Fractal Engines."],
+  ["Fractal Engine", 15, "Recursive Genius 🔁", "You own 15 Fractal Engines."],
+
+  ["Javascript Console", 5, "Console Logger 💻", "You own 5 JavaScript Consoles."],
+  ["Javascript Console", 15, "Infinite Loop 🖥️", "You own 15 JavaScript Consoles."],
+
+  ["Idleverse", 1, "Meta Awakening 🌌", "You created the Idleverse."],
+  ["Idleverse", 10, "Simulation Overlord 🧬", "You own 10 Idleverses."],
+
+  ["Cortex Baker", 1, "Mind Over Batter 🧠", "You built your first Cortex Baker."],
+  ["Cortex Baker", 5, "Neural Doughmaster 🧠🍪", "You own 5 Cortex Bakers."],
+  ["Cortex Baker", 10, "Brainstorm Bakesplosion 🧠⚡", "You own 10 Cortex Bakers."]
 ];
+
 
 const achievements = computed(() => [
   ...clickAchievementsData.map(([count, name, desc]) => ({
     name,
     desc,
     get condition() {
-      return userclicked.value === count;
+      return userclicked.value == count;
     },
   })),
   ...buildingAchievementsData.map(([buildingName, targetCount, name, desc]) => ({
@@ -56,7 +109,7 @@ const achievements = computed(() => [
     desc,
     get condition() {
       return buildings.value.some(
-        (item) => item.name === buildingName && item.count >= targetCount
+        (item) => item.name == buildingName && item.count == targetCount
       );
     },
   })),
