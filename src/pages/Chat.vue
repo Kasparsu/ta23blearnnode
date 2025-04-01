@@ -4,17 +4,30 @@ import { ref } from 'vue'
 
 let message = ref('')
 let messages = ref([])
-setInterval(async () => {
-    let res = await axios.get('http://localhost:3000/messages')
-    messages.value = res.data
-}, 1000)
+let lastMessageDate = null
+
+let res = await axios.get('http://localhost:3000/messages')
+messages.value.push(...res.data)
+if (res.data.length > 0) {
+    let lastMessage = res.data[res.data.length - 1];
+    lastMessageDate = lastMessage.date
+}
+
+let longPoll = async () => {
+    let res = await axios.get('http://localhost:3000/messages/longpoll')
+    messages.value.push(...res.data)
+    if (res.data.length > 0) {
+        let lastMessage = res.data[res.data.length - 1];
+        lastMessageDate = lastMessage.date
+    }
+}
 
 let send = async () => {
     let res = await axios.post('http://localhost:3000/messages', {
         message: message.value
     })
-    message.value = ''
-    messages.value.push(res.data)
+    message.value = '';
+
 }
 </script>
 
