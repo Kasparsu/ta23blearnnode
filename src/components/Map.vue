@@ -15,6 +15,7 @@ onMounted(() => {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
+    L.polygon([[59.4699, 24.8279]], {color: 'red', weight: 20}).addTo(map);
 });
 
 watch(() => center, (newCenter, oldCenter) => {
