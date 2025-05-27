@@ -7,31 +7,38 @@ let { center, zoom } = defineProps(['center', 'zoom']);
 
 let id = 'map-' + useId();
 let map;
-onMounted(() => {
-    console.log(document.getElementById(id));
+let rectangle;
 
+onMounted(() => {
     map = L.map(id).setView(center, zoom);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
-    L.polygon([[59.4699, 24.8279]], {color: 'red', weight: 20}).addTo(map);
+    rectangle = L.polygon([
+        [59.4850, 24.8380],
+        [59.4850, 24.8390],
+        [59.4701, 24.83250],
+        [59.4701, 24.8276]
+    ], {color: 'red', weight: 2}).addTo(map);
+    L.circleMarker([59.4780, 24.8355], {radius: 15}).addTo(map)
 });
 
-watch(() => center, (newCenter, oldCenter) => {
-    console.log(newCenter, oldCenter);
+watch(() => center, (newCenter) => {
     map.panTo(newCenter);
 });
-watch(() => zoom, newZoom => {
+
+watch(() => zoom, (newZoom) => {
     map.setZoom(newZoom);
 });
 </script>
+
 <template>
-     <div :id="id"></div>
+    <div :id="id"></div>
 </template>
 
 <style scoped>
-div { 
+div {
     height: 40vh;
 }
 </style>
