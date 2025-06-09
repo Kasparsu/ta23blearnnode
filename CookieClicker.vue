@@ -49,7 +49,7 @@ function startGoldenCookieTimer() {
 }
 
 function clickGoldenCookie() {
-    cookies.value += 100 * (1 + cps.value); // annab korraliku boosti!
+    cookies.value += 100 * (1 + cps.value);
     goldenCookieVisible.value = false;
 }
 
