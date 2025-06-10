@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+
 const cookies = ref(0);
 const buildings = ref([
   { name: 'Cursor', price: 15, cps: 0.1, count: 0 },
@@ -7,28 +8,34 @@ const buildings = ref([
   { name: 'Farm', price: 1000, cps: 10, count: 0 },
   { name: 'Factory', price: 10000, cps: 30, count: 0 },
 ]);
+
 const upgrades = ref([
   { id: 1, name: 'Better Cursors', description: 'Cursors give 2x more cookies', cost: 100, bought: false, apply: () => { multiplyBuildingCPS('Cursor', 2) }},
   { id: 2, name: 'Efficient Farms', description: 'Farms give 2x more cookies', cost: 5000, bought: false, apply: () => { multiplyBuildingCPS('Farm', 2) }},
   { id: 3, name: 'Grandma Helpers', description: 'Grandmas give 2x more cookies', cost: 2000, bought: false, apply: () => { multiplyBuildingCPS('Grandma', 2) }},
 ]);
+
 const achievements = ref([
   { id: 1, name: 'First Click', description: 'Click the cookie once', achieved: false, condition: () => cookies.value >= 1 },
   { id: 2, name: '100 Cookies', description: 'Bake 100 cookies', achieved: false, condition: () => cookies.value >= 100 },
   { id: 3, name: '10 Buildings', description: 'Buy 10 buildings', achieved: false, condition: () => totalBuildings() >= 10 },
   { id: 4, name: 'Upgrade Buyer', description: 'Buy 2 upgrades', achieved: false, condition: () => upgrades.value.filter(u => u.bought).length >= 2 },
 ]);
+
 const goldenCookieVisible = ref(false);
 const goldenCookieMultiplier = ref(1);
 let goldenCookieTimeout = null;
 let goldenCookieEffectTimeout = null;
+
 function multiplyBuildingCPS(buildingName, factor) {
   const b = buildings.value.find(b => b.name === buildingName);
   if (b) b.cps *= factor;
 }
+
 function totalBuildings() {
   return buildings.value.reduce((acc, b) => acc + b.count, 0);
 }
+
 function buyBuilding(building) {
   if (cookies.value >= building.price) {
     cookies.value -= building.price;
@@ -37,6 +44,7 @@ function buyBuilding(building) {
     checkAchievements();
   }
 }
+
 function buyUpgrade(upgrade) {
   if (cookies.value >= upgrade.cost && !upgrade.bought) {
     cookies.value -= upgrade.cost;
@@ -45,6 +53,7 @@ function buyUpgrade(upgrade) {
     checkAchievements();
   }
 }
+
 function clickGoldenCookie() {
   if (!goldenCookieVisible.value) return;
   goldenCookieVisible.value = false;
@@ -54,6 +63,7 @@ function clickGoldenCookie() {
     goldenCookieMultiplier.value = 1;
   }, 10000);
 }
+
 function scheduleGoldenCookie() {
   if (goldenCookieTimeout) clearTimeout(goldenCookieTimeout);
   const nextTime = 30000 + Math.random() * 30000;
@@ -62,6 +72,7 @@ function scheduleGoldenCookie() {
     scheduleGoldenCookie();
   }, nextTime);
 }
+
 function checkAchievements() {
   achievements.value.forEach(a => {
     if (!a.achieved && a.condition()) {
@@ -69,6 +80,7 @@ function checkAchievements() {
     }
   });
 }
+
 const saveGameState = () => {
   const gameState = {
     cookies: cookies.value,
@@ -93,6 +105,7 @@ const saveGameState = () => {
     console.error('Save error:', error);
   }
 };
+
 const loadGameState = () => {
   try {
     const savedData = localStorage.getItem('cookieGameSave');
@@ -123,21 +136,28 @@ const loadGameState = () => {
     console.error('Load error:', error);
   }
 };
+
 const cps = computed(() =>
   buildings.value.reduce((acc, b) => acc + b.cps * b.count, 0) * goldenCookieMultiplier.value
 );
+
 let saveInterval;
 let cookieInterval;
+
 onMounted(() => {
   loadGameState();
   scheduleGoldenCookie();
+
   saveInterval = setInterval(saveGameState, 1000);
+
   cookieInterval = setInterval(() => {
     cookies.value += cps.value / 10;
     document.title = `🍪${cookies.value.toFixed(1)} Cookies!`;
     checkAchievements();
   }, 100);
+
 });
+
 onBeforeUnmount(() => {
   clearInterval(saveInterval);
   clearInterval(cookieInterval);
@@ -145,6 +165,7 @@ onBeforeUnmount(() => {
   clearTimeout(goldenCookieEffectTimeout);
 });
 </script>
+
 <template>
   <div class="columns" style="position: relative;">
     <div class="column is-4 has-background-grey has-text-centered">
@@ -153,6 +174,7 @@ onBeforeUnmount(() => {
       <figure class="image is-square" @click="cookies++" style="cursor:pointer;">
         <img src="https://www.freeiconspng.com/uploads/download-biscuit-cookie-monster-clipart-24.png" />
       </figure>
+
       <figure
         v-if="goldenCookieVisible"
         class="image is-64x64"
@@ -162,6 +184,7 @@ onBeforeUnmount(() => {
       >
         <img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Gold_Coin_icon.png" />
       </figure>
+
       <div class="mt-5 has-text-left" style="color: white;">
         <h4 class="is-size-4">Achievements</h4>
         <ul>
@@ -175,6 +198,7 @@ onBeforeUnmount(() => {
         </ul>
       </div>
     </div>
+
     <div class="column is-6 has-background-grey-dark">
       <!-- Grandma Images -->
       <div class="columns is-flex is-flex-wrap-wrap">
@@ -187,6 +211,7 @@ onBeforeUnmount(() => {
           <img src="https://png.pngtree.com/png-clipart/20230914/original/pngtree-cute-grandma-clipart-the-cartoon-old-lady-character-has-a-bouquet-png-image_11242831.png" />
         </figure>
       </div>
+
       <!-- Farm Images -->
       <div class="columns is-flex is-flex-wrap-wrap">
         <figure
@@ -198,6 +223,7 @@ onBeforeUnmount(() => {
           <img src="https://pics.clipartpng.com/Corn_PNG_Clipart-466.png" />
         </figure>
       </div>
+
       <!-- Factory Images -->
       <div class="columns is-flex is-flex-wrap-wrap">
         <figure
@@ -210,6 +236,7 @@ onBeforeUnmount(() => {
         </figure>
       </div>
     </div>
+
     <div class="column is-2 has-background-grey-darker">
       <button
         v-for="building in buildings"
@@ -220,7 +247,9 @@ onBeforeUnmount(() => {
       >
         {{ building.name }} 🍪 {{ building.price }} #{{ building.count }}
       </button>
+
       <hr />
+
       <button
         v-for="upgrade in upgrades"
         :key="upgrade.id"
@@ -236,6 +265,7 @@ onBeforeUnmount(() => {
     </div>
   </div>
 </template>
+
 <style scoped>
 button[disabled] {
   opacity: 0.5;
